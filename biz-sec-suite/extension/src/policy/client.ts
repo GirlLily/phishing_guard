@@ -2,16 +2,16 @@ import { getCachedPolicy, setCachedPolicy } from "./cache";
 import { CompanyPolicy } from "./types";
 import { verifyPolicySignature } from "./verify";
 
-// Configure at build time or via runtime messaging
-const POLICY_API_BASE = "";
-const COMPANY_ID = "";
+// Injected at build time via vite define
+declare const __POLICY_API_BASE__: string;
+declare const __COMPANY_ID__: string;
 
 export async function getPolicy(): Promise<CompanyPolicy | null> {
-  if (!COMPANY_ID || !POLICY_API_BASE) return null;
-  const cached = getCachedPolicy(COMPANY_ID);
+  if (!__COMPANY_ID__ || !__POLICY_API_BASE__) return null;
+  const cached = getCachedPolicy(__COMPANY_ID__);
   if (cached) return cached;
 
-  const res = await fetch(`${POLICY_API_BASE}/policy/${encodeURIComponent(COMPANY_ID)}`, {
+  const res = await fetch(`${__POLICY_API_BASE__}/policy/${encodeURIComponent(__COMPANY_ID__)}`, {
     method: "GET",
     credentials: "omit",
     cache: "no-store"

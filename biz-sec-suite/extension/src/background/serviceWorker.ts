@@ -6,6 +6,7 @@ import { getPolicy } from "../policy/client";
 import { isAllowedOrigin } from "../util/url";
 import { logInfo, logWarn, logError } from "../util/log";
 import type { CompanyPolicy } from "../policy/types";
+import { reportEvent } from "../telemetry/report";
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message?.type !== "LOGIN_CANDIDATE") return;
@@ -34,8 +35,10 @@ async function handleLoginCandidate(message: { origin: string; url: string }, se
 
   if (band === "STRONG" || band === "MEDIUM") {
     await showBlockUI(sender.tab.id, message.url, band, policy);
+    void reportEvent({ type: "BLOCKED", origin: message.origin, similarityBand: band });
   } else {
     await showWarnUI(sender.tab.id, band);
+    void reportEvent({ type: "WARNED", origin: message.origin, similarityBand: band });
   }
 }
 

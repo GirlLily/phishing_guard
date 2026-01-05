@@ -1,15 +1,14 @@
 import { canonicalJson } from "../../../shared/crypto/canonicalJson";
 import { CompanyPolicy } from "./types";
 
-// Replace with admin-pinned base64 public key
-const pinnedPublicKeyBase64 = "";
+declare const __POLICY_VERIFY_KEY_BASE64__: string;
 
 export async function verifyPolicySignature(policy: CompanyPolicy): Promise<boolean> {
-  if (!pinnedPublicKeyBase64) throw new Error("Pinned public key not configured");
+  if (!__POLICY_VERIFY_KEY_BASE64__) throw new Error("Pinned public key not configured");
   const { signature, ...unsigned } = policy;
   const canonical = canonicalJson(unsigned);
   const signatureBytes = decodeBase64(signature);
-  const key = await importPublicKey(pinnedPublicKeyBase64);
+  const key = await importPublicKey(__POLICY_VERIFY_KEY_BASE64__);
   return crypto.subtle.verify("Ed25519", key, signatureBytes, new TextEncoder().encode(canonical));
 }
 
