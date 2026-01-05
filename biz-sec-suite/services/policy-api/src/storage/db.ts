@@ -1,3 +1,5 @@
+import { promises as fs } from "fs";
+import path from "path";
 import { Enforcement, Thresholds, VisualBaseline, CompanyPolicy } from "../types/policy";
 import { TelemetryEvent } from "../../../../shared/types/events";
 import { signPolicy } from "../signing/sign";
@@ -12,6 +14,7 @@ type CompanyRecord = {
   visualBaselines: VisualBaseline[];
 };
 
+const DATA_DIR = path.join(process.cwd(), "data");
 const companies = new Map<string, CompanyRecord>();
 const events: TelemetryEvent[] = [];
 const MAX_BASELINES = 20;
@@ -53,6 +56,7 @@ export function addBaselines(companyId: string, baselines: VisualBaseline[]): Co
   // keep most recent MAX_BASELINES
   record.visualBaselines = record.visualBaselines.slice(-MAX_BASELINES);
   record.version += 1;
+  void persist();
   return record;
 }
 
@@ -76,8 +80,30 @@ export function buildSignedPolicy(companyId: string): CompanyPolicy | undefined 
 export function recordEvent(event: TelemetryEvent): void {
   events.push({ ...event, ts: event.ts || new Date().toISOString() });
   if (events.length > 1000) events.shift();
+  void persist();
 }
 
 export function listEvents(): TelemetryEvent[] {
   return [...events];
+}
+
+export async function persist(): Promise<void> {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  const state = {
+    companies: Array.from(companies.values()),
+    events
+  };
+  await fs.writeFile(path.join(DATA_DIR, "state.json"), JSON.stringify(state, null, 2), { encoding: "utf8" });
+}
+
+export async function load(): Promise<void> {
+  try {
+    const file = await fs.readFile(path.join(DATA_DIR, "state.json"), "utf8");
+    const state = JSON.parse(file) as { companies: CompanyRecord[]; events: TelemetryEvent[] };
+    companies.clear();
+    for (const c of state.companies) companies.set(c.companyId, c);
+    events.splice(0, events.length, ...state.events);
+  } catch {
+    // ignore if missing
+  }
 }
