@@ -1,0 +1,17 @@
+{
+  "name": "baseline-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p ."
+  },
+  "dependencies": {
+    "playwright": "^1.42.1",
+    "pngjs": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5"
+  }
+}

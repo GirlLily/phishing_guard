@@ -1,0 +1,12 @@
+{
+  "name": "biz-sec-suite-extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:chrome": "echo 'wire bundler here (e.g. vite/rollup) and copy manifest.chrome.json'",
+    "build:firefox": "echo 'wire bundler here (e.g. vite/rollup) and copy manifest.firefox.json'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

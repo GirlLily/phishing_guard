@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Biz Sec Suite",
+  "version": "0.1.0",
+  "description": "Blocks or warns on suspicious sign-in pages based on policy and visual similarity.",
+  "permissions": ["storage", "tabs", "scripting", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background/serviceWorker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/detector.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["ui/block.html", "ui/warn.html", "content/overlay.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
