@@ -75,52 +75,58 @@ export function App(): JSX.Element {
   }, []);
 
   return (
-    <div style={{ fontFamily: "Inter, sans-serif", padding: "16px", maxWidth: 900, margin: "0 auto" }}>
+    <div className="app-shell">
       <h1>Biz Sec Suite Admin</h1>
-      <section style={{ marginBottom: 24 }}>
-        <label>Company ID</label>
-        <div style={{ display: "flex", gap: 8 }}>
-          <input value={companyId} onChange={(e) => setCompanyId(e.target.value)} placeholder="contoso" />
-          <button onClick={() => void createCompany()}>Ensure Company</button>
-          <button onClick={() => void fetchPolicy()}>Fetch Policy</button>
-        </div>
-        {message && <p>{message}</p>}
-        {policy && (
-          <div style={{ marginTop: 12 }}>
-            <div>Version: {policy.version}</div>
-            <div>Issued: {policy.issuedAt}</div>
+      <div className="stack">
+        <section className="card">
+          <label>Company ID</label>
+          <div className="row">
+            <input value={companyId} onChange={(e) => setCompanyId(e.target.value)} placeholder="contoso" />
+            <button onClick={() => void createCompany()}>Ensure</button>
+            <button className="secondary" onClick={() => void fetchPolicy()}>
+              Refresh Policy
+            </button>
           </div>
-        )}
-      </section>
+          {message && <div className="message">{message}</div>}
+          {policy && (
+            <div className="row" style={{ marginTop: 10, gap: 14 }}>
+              <span className="tag">v{policy.version}</span>
+              <span className="message">Issued: {policy.issuedAt}</span>
+            </div>
+          )}
+        </section>
 
-      <section style={{ marginBottom: 24 }}>
-        <h2>Allowlist</h2>
-        <AllowlistEditor onSave={(list) => void updateAllowlist(list)} />
-      </section>
+        <section className="card">
+          <h2 style={{ marginTop: 0 }}>Allowlist</h2>
+          <AllowlistEditor onSave={(list) => void updateAllowlist(list)} />
+        </section>
 
-      <section>
-        <h2>Recent Events</h2>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th align="left">Time</th>
-              <th align="left">Origin</th>
-              <th align="left">Band</th>
-              <th align="left">Type</th>
-            </tr>
-          </thead>
-          <tbody>
-            {events.map((e, idx) => (
-              <tr key={idx}>
-                <td>{e.ts}</td>
-                <td>{e.origin}</td>
-                <td>{e.similarityBand}</td>
-                <td>{e.type}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
+        <section className="card">
+          <h2 style={{ marginTop: 0 }}>Recent Events</h2>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Origin</th>
+                  <th>Band</th>
+                  <th>Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                {events.map((e, idx) => (
+                  <tr key={idx}>
+                    <td>{e.ts}</td>
+                    <td>{e.origin}</td>
+                    <td>{e.similarityBand}</td>
+                    <td>{e.type}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
@@ -129,8 +135,8 @@ function AllowlistEditor({ onSave }: { onSave: (list: string[]) => void }): JSX.
   const [text, setText] = useState("");
   const [items, setItems] = useState<string[]>([]);
   return (
-    <div>
-      <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+    <div className="stack">
+      <div className="row">
         <input value={text} onChange={(e) => setText(e.target.value)} placeholder="https://login.microsoftonline.com" />
         <button
           onClick={() => {
@@ -142,14 +148,19 @@ function AllowlistEditor({ onSave }: { onSave: (list: string[]) => void }): JSX.
           Add
         </button>
       </div>
-      <ul>
+      <ul className="list">
         {items.map((i, idx) => (
           <li key={idx}>
-            {i} <button onClick={() => setItems((prev) => prev.filter((_, j) => j !== idx))}>Remove</button>
+            {i}{" "}
+            <button className="secondary" onClick={() => setItems((prev) => prev.filter((_, j) => j !== idx))}>
+              Remove
+            </button>
           </li>
         ))}
       </ul>
-      <button onClick={() => onSave(items)}>Save Allowlist</button>
+      <div className="row" style={{ justifyContent: "flex-end" }}>
+        <button onClick={() => onSave(items)}>Save Allowlist</button>
+      </div>
     </div>
   );
 }
